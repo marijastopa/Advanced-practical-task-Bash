@@ -41,7 +41,7 @@ create_table() {
     echo "Table $table_name created successfully with fields: ${fields[*]}"
 }
 
-# Insert Data function
+# Insert Data function 
 insert_data() {
     db_name="$1.txt"
     table_name="$2"
@@ -58,9 +58,27 @@ insert_data() {
         exit 1
     fi
 
-    # Insert the data into the table with proper formatting
     echo "** $(printf '%-8s' "${data[@]}") **" >> "$db_name"
     echo "Data inserted into table $table_name."
+}
+
+# Select Data function
+select_data() {
+    db_name="$1.txt"
+    table_name="$2"
+
+    if [[ ! -f "$db_name" ]]; then
+        echo "Error: Database $1 does not exist."
+        exit 1
+    fi
+
+    if ! grep -q "TABLE $table_name" "$db_name"; then
+        echo "Error: Table $table_name does not exist."
+        exit 1
+    fi
+
+    echo "Displaying data from table $table_name:"
+    awk "/TABLE $table_name/{flag=1; next} /TABLE/{flag=0} flag" "$db_name"
 }
 
 # Main function to handle commands
@@ -74,8 +92,11 @@ case "$1" in
     insert_data)
         insert_data "$2" "$3" "${@:4}"
         ;;
+    select_data)
+        select_data "$2" "$3"
+        ;;
     *)
-        echo "Usage: $0 {create_db <database_name>} {create_table <database_name> <table_name> <fields...>} {insert_data <database_name> <table_name> <data...>}"
+        echo "Usage: $0 {create_db <database_name>} {create_table <database_name> <table_name> <fields...>} {insert_data <database_name> <table_name> <data...>} {select_data <database_name> <table_name>}"
         ;;
 esac
 
