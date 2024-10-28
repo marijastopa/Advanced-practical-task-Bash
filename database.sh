@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Create Database function (already implemented)
+# Create Database function
 create_db() {
     db_name="$1.txt"
     if [[ -z "$1" ]]; then
@@ -26,22 +26,41 @@ create_table() {
     shift 2
     fields=("$@")
 
-    # Check if database exists
     if [[ ! -f "$db_name" ]]; then
         echo "Error: Database $1 does not exist."
         exit 1
     fi
 
-    # Ensure table doesn't already exist
     if grep -q "TABLE $table_name" "$db_name"; then
         echo "Error: Table $table_name already exists in $1."
         exit 1
     fi
 
-    # Create the table with the specified fields
     echo "TABLE $table_name" >> "$db_name"
     echo "** $(printf '%-8s' "${fields[@]}") **" >> "$db_name"
     echo "Table $table_name created successfully with fields: ${fields[*]}"
+}
+
+# Insert Data function
+insert_data() {
+    db_name="$1.txt"
+    table_name="$2"
+    shift 2
+    data=("$@")
+
+    if [[ ! -f "$db_name" ]]; then
+        echo "Error: Database $1 does not exist."
+        exit 1
+    fi
+
+    if ! grep -q "TABLE $table_name" "$db_name"; then
+        echo "Error: Table $table_name does not exist."
+        exit 1
+    fi
+
+    # Insert the data into the table with proper formatting
+    echo "** $(printf '%-8s' "${data[@]}") **" >> "$db_name"
+    echo "Data inserted into table $table_name."
 }
 
 # Main function to handle commands
@@ -52,8 +71,11 @@ case "$1" in
     create_table)
         create_table "$2" "$3" "${@:4}"
         ;;
+    insert_data)
+        insert_data "$2" "$3" "${@:4}"
+        ;;
     *)
-        echo "Usage: $0 {create_db <database_name>} {create_table <database_name> <table_name> <fields...>}"
+        echo "Usage: $0 {create_db <database_name>} {create_table <database_name> <table_name> <fields...>} {insert_data <database_name> <table_name> <data...>}"
         ;;
 esac
 
