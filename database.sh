@@ -41,7 +41,7 @@ create_table() {
     echo "Table $table_name created successfully with fields: ${fields[*]}"
 }
 
-# Insert Data function 
+# Insert Data function
 insert_data() {
     db_name="$1.txt"
     table_name="$2"
@@ -81,6 +81,37 @@ select_data() {
     awk "/TABLE $table_name/{flag=1; next} /TABLE/{flag=0} flag" "$db_name"
 }
 
+# Delete Data function
+delete_data() {
+    db_name="$1.txt"
+    table_name="$2"
+    condition="$3"
+
+    if [[ ! -f "$db_name" ]]; then
+        echo "Error: Database $1 does not exist."
+        exit 1
+    fi
+
+    if ! grep -q "TABLE $table_name" "$db_name"; then
+        echo "Error: Table $table_name does not exist."
+        exit 1
+    fi
+
+    # Extract the field and value from the condition (e.g., id=1)
+    field=$(echo "$condition" | cut -d'=' -f1)
+    value=$(echo "$condition" | cut -d'=' -f2)
+
+    # Delete rows matching the condition
+    awk -v field="$field" -v value="$value" '
+    BEGIN { FS=" " }
+    /TABLE '"$table_name"'/{flag=1; next} /TABLE/{flag=0}
+    flag && $2 == value { next }
+    { print }
+    ' "$db_name" > tmpfile && mv tmpfile "$db_name"
+
+    echo "Deleted data where $condition from $table_name."
+}
+
 # Main function to handle commands
 case "$1" in
     create_db)
@@ -95,8 +126,11 @@ case "$1" in
     select_data)
         select_data "$2" "$3"
         ;;
+    delete_data)
+        delete_data "$2" "$3" "$4"
+        ;;
     *)
-        echo "Usage: $0 {create_db <database_name>} {create_table <database_name> <table_name> <fields...>} {insert_data <database_name> <table_name> <data...>} {select_data <database_name> <table_name>}"
+        echo "Usage: $0 {create_db <database_name>} {create_table <database_name> <table_name> <fields...>} {insert_data <database_name> <table_name> <data...>} {select_data <database_name> <table_name>} {delete_data <database_name> <table_name> <condition>}"
         ;;
 esac
 
