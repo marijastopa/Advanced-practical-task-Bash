@@ -127,7 +127,7 @@ select_data() {
     awk "/TABLE $table_name/{flag=1; next} /TABLE/{flag=0} flag" "$db_name"
 }
 
-# Updated Delete Data function with validation
+# Updated Delete Data function with dynamic condition matching
 delete_data() {
     if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
         echo "Error: Missing arguments for deleting data."
@@ -152,12 +152,12 @@ delete_data() {
     field=$(echo "$condition" | cut -d'=' -f1)
     value=$(echo "$condition" | cut -d'=' -f2)
 
-    # Find the index of the field (e.g., "id") in the table header
+    # Find the index of the field (e.g., "id" or "name") in the table header
     field_index=$(awk -v table="$table_name" -v field="$field" '
     BEGIN { found_table=0; field_index=-1 }
     /TABLE/ { if ($2 == table) { found_table=1; next } }
     found_table && /TABLE/ { exit }
-    found_table { 
+    found_table {
         for (i=2; i<=NF; i++) {
             if ($i == field) {
                 field_index=i;
