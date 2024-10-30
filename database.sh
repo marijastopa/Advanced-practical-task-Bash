@@ -21,6 +21,29 @@ check_table_exists() {
     fi
 }
 
+# Function to check if a field is within the required length
+validate_field_length() {
+    field="$1"
+    if [[ ${#field} -gt 8 ]]; then
+        echo "Error: Field '$field' exceeds 8 characters."
+        exit 1
+    fi
+}
+
+# Function to format a row to meet the required structure
+format_row() {
+    row_data=("$@")
+    formatted_row="**"
+    
+    for field in "${row_data[@]}"; do
+        formatted_row+=" $(printf '%-8s' "$field")"
+    done
+
+    formatted_row+=" **"
+
+    echo "$formatted_row"
+}
+
 # Create Database function
 create_db() {
     if [[ -z "$1" ]]; then
@@ -42,7 +65,7 @@ create_db() {
     fi
 }
 
-# Create Table function
+# Create Table function with field length validation
 create_table() {
     if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
         echo "Error: Missing arguments for creating table."
@@ -61,6 +84,7 @@ create_table() {
             echo "Error: Field names cannot be empty."
             exit 1
         fi
+        validate_field_length "$field"
     done
 
     if grep -q "TABLE $table_name" "$db_name"; then
@@ -69,11 +93,12 @@ create_table() {
     fi
 
     echo "TABLE $table_name" >> "$db_name"
-    echo "** $(printf '%-8s' "${fields[@]}") **" >> "$db_name"
+    formatted_header=$(format_row "${fields[@]}")
+    echo "$formatted_header" >> "$db_name"
     echo "Table '$table_name' created with fields: ${fields[*]}"
 }
 
-# Insert Data function with data length check and duplicate prevention
+# Insert Data function with data length check
 insert_data() {
     if [[ -z "$1" || -z "$2" ]]; then
         echo "Error: Missing arguments for inserting data."
@@ -89,6 +114,7 @@ insert_data() {
     shift 2
     data=("$@")
 
+    # Check individual field lengths (each field must be <= 8 characters)
     for value in "${data[@]}"; do
         if [[ -z "$value" ]]; then
             echo "Error: Data values cannot be empty."
@@ -99,13 +125,16 @@ insert_data() {
         fi
     done
 
+    # Check for duplicate IDs
     id_value="${data[0]}"
     if grep -q " $id_value " "$db_name"; then
         echo "Error: Duplicate entry for ID '$id_value'."
         exit 1
     fi
 
-    echo "** $(printf '%-8s' "${data[@]}") **" >> "$db_name"
+    # Insert the row into the table if all checks pass
+    formatted_row=$(format_row "${data[@]}")
+    echo "$formatted_row" >> "$db_name"
     echo "Data inserted into table '$table_name'."
 }
 
