@@ -16,11 +16,11 @@ Each function is triggered by a command-line argument. Below is a detailed list 
 ### 1. Create a Database
 Creates a new database file with the specified name.
 
-```./database.sh create_db <database_name>```
+	./database.sh create_db <database_name>
 
 Example:
 
-```./database.sh create_db test_db```
+	./database.sh create_db test_db
 
 Error Handling:
 - If no database name is provided, an error message is shown.
@@ -30,11 +30,11 @@ Error Handling:
 ### 2. Create a Table
 Creates a table within an existing database. Field names are limited to 8 characters each.
 
-```./database.sh create_table <database_name> <table_name> <fields...>```
+	./database.sh create_table <database_name> <table_name> <fields...>
 
 Example:
 
-```./database.sh create_table test_db persons id name height age```
+	./database.sh create_table test_db persons id name height age
 
 Error Handling:
 - If the database does not exist, an error message is shown.
@@ -44,11 +44,11 @@ Error Handling:
 ### 3. Insert Data
 Inserts a row of data into a specified table within an existing database. Each data value is limited to 8 characters, and duplicate IDs are not allowed.
 
-```./database.sh insert_data <database_name> <table_name> <data...>```
+	./database.sh insert_data <database_name> <table_name> <data...>
 
 Example:
 
-```./database.sh insert_data test_db persons 1 John 180 25```
+	./database.sh insert_data test_db persons 1 John 180 25
 
 Error Handling:
 - If the database or table does not exist, an error message is shown.
@@ -58,11 +58,11 @@ Error Handling:
 ### 4. Select Data
 Displays all data from a specified table in a database.
 
-```./database.sh select_data <database_name> <table_name>```
+	./database.sh select_data <database_name> <table_name>
 
 Example:
 
-```./database.sh select_data test_db persons```
+	./database.sh select_data test_db persons
 
 Error Handling:
 - If the database or table does not exist, an error message is shown.
@@ -70,11 +70,11 @@ Error Handling:
 ### 5. Delete Data
 Deletes rows from a table based on a specified condition in the format field=value.
 
-```./database.sh delete_data <database_name> <table_name> <condition>```
+	./database.sh delete_data <database_name> <table_name> <condition>
 
 Example:
 
-```./database.sh delete_data test_db persons "id=1"```
+	./database.sh delete_data test_db persons "id=1"
 
 Error Handling:
 - If the database or table does not exist, an error message is shown.
@@ -105,21 +105,17 @@ The script includes robust error handling for each function to ensure user-frien
 
 ## Examples
 ### Creating a Database and Table
-```./database.sh create_db employees_db```
-
-```./database.sh create_table employees_db employees id name position salary```
+	./database.sh create_db test_db
+	./database.sh create_table test_db persons id name height age
 
 ### Inserting and Selecting Data
-```./database.sh insert_data employees_db employees 1 Alice Manager 70000```
-
-```./database.sh insert_data employees_db employees 2 Bob Developer 60000```
-
-```./database.sh select_data employees_db employees```
+	./database.sh insert_data test_db persons 1 Alice 173 57
+	./database.sh insert_data test_db persons 2 Bob 189 98
+	./database.sh select_data test_db persons
 
 ### Deleting Data
-```./database.sh delete_data employees_db employees "id=2"```
-
-```./database.sh select_data employees_db employees```
+	./database.sh delete_data test_db persons "id=2"
+	./database.sh select_data test_db persons
 
 ## Script Structure
 ```create_db```: Function to create a new database.
