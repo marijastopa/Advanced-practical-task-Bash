@@ -1,6 +1,6 @@
 # Database Service in Bash
 
-This repository contains database.sh, a Bash script that implements a lightweight database service. The script provides basic database functionalities, including creating databases and tables, inserting data, retrieving data, and deleting data based on conditions. It also includes comprehensive error handling to ensure reliable and clear feedback for incorrect usage.
+This repository contains ```database.sh```, a Bash script that implements a lightweight database service. The script provides basic database functionalities, including creating databases and tables, inserting data, retrieving data, and deleting data based on conditions. It also includes comprehensive error handling to ensure reliable and clear feedback for incorrect usage.
 
 ## Features
 - **Database Creation:** Creates a new database file with a specified name.
